@@ -1,11 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Model } from 'mongoose';
+import { User } from './schemas/user.schema';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  //- tiêm model User vào constructor lên trang chủ đọc tài liệu hướng dẫn
+  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+
+  async create(createUserDto: CreateUserDto) {
+    const user = await this.userModel.create(createUserDto); //- tạo một document mới từ createUserDto
+    return user; //- trả về document vừa tạo
   }
 
   findAll() {
