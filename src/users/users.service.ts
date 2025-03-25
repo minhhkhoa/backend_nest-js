@@ -4,15 +4,24 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Model } from 'mongoose';
 import { User } from './schemas/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
+import { genSaltSync, hashSync } from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
   //- tiêm model User vào constructor lên trang chủ đọc tài liệu hướng dẫn
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
+  getHashPassword(password: string): string {
+    const salt: string = genSaltSync(10);
+    const hash: string = hashSync(password, salt);
+    return hash;
+  }
+
   async create(createUserDto: CreateUserDto) {
-    const user = await this.userModel.create(createUserDto); //- tạo một document mới từ createUserDto
-    return user; //- trả về document vừa tạo
+    const hashPassword: string = this.getHashPassword(createUserDto.password);
+    createUserDto.password = hashPassword;
+    const user = await this.userModel.create(createUserDto);
+    return user;
   }
 
   findAll() {
