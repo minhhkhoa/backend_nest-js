@@ -28,14 +28,22 @@ export class UsersService {
     return `This action returns all users`;
   }
 
-  findOne(id: string) {
+  async findOne(id: string) {
     //- kiểm tra id có hợp lệ không voi mongoose.Types.ObjectId.isValid(id)
     if (!mongoose.Types.ObjectId.isValid(id)) {
+      return {
+        message: 'id not valid!',
+      };
+    }
+
+    const user = await this.userModel.findById(id);
+
+    if (!user) {
       return {
         message: 'not found user!',
       };
     }
-    return this.userModel.findById(id);
+    return user;
   }
 
   async update(updateUserDto: UpdateUserDto) {
@@ -45,7 +53,21 @@ export class UsersService {
     );
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return {
+        message: 'id not invalid!',
+      };
+    }
+
+    const user = await this.userModel.findById(id);
+
+    if (!user) {
+      return {
+        message: 'not found user want delete!',
+      };
+    }
+
+    return await this.userModel.deleteOne({ _id: id });
   }
 }
