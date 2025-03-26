@@ -28,8 +28,13 @@ export class UsersController {
   }
 
   @Get('detail-user')
-  findUser(@Query('id') id?: string, @Query('username') email?: string) {
-    return this.usersService.findUser({ id, email });
+  findUser(@Query('id') id?: string, @Query('username') username?: string) {
+    return this.usersService.findUser({ id, username });
+  }
+
+  @Get('login')
+  login(@Query('email') email: string) {
+    return this.usersService.login(email);
   }
 
   //- cho hết vào body kể cả id

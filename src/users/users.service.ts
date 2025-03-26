@@ -39,22 +39,22 @@ export class UsersService {
    */
   async findUser(criteria: {
     id?: string;
-    email?: string;
+    username?: string;
   }): Promise<User | User[]> {
     if (criteria.id) {
       // Kiểm tra id hợp lệ với mongoose
       if (!mongoose.Types.ObjectId.isValid(criteria.id)) {
         throw new BadRequestException('Invalid id!');
       }
-      const user = await this.userModel.findById(criteria.id);
+      const user = await this.userModel.findById({ id: criteria.id });
       if (!user) {
         throw new NotFoundException('User not found!');
       }
       return user;
-    } else if (criteria.email) {
+    } else if (criteria.username) {
       // Tìm kiếm user theo emai không phân biệt hoa thường
       const users = await this.userModel.find({
-        email: new RegExp(criteria.email, 'i'),
+        username: new RegExp(criteria.username, 'i'),
       });
       if (!users.length) {
         throw new NotFoundException('No user found with the given username!');
@@ -69,6 +69,10 @@ export class UsersService {
 
   isValidPassword(password: string, hashPassword: string): boolean {
     return compareSync(password, hashPassword);
+  }
+
+  async login(email: string) {
+    return await this.userModel.findOne({ email });
   }
 
   async update(updateUserDto: UpdateUserDto) {
