@@ -1,10 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import mongoose, { Model } from 'mongoose';
 import { User } from './schemas/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { genSaltSync, hashSync } from 'bcryptjs';
+import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
@@ -28,22 +32,43 @@ export class UsersService {
     return `This action returns all users`;
   }
 
-  async findOne(id: string) {
-    //- kiểm tra id có hợp lệ không voi mongoose.Types.ObjectId.isValid(id)
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return {
-        message: 'id not valid!',
-      };
+  /**
+   * Tìm user theo id hoặc username
+   * @param criteria { id?: string; username?: string; }
+   * @returns Một đối tượng user hoặc mảng user nếu tìm theo username
+   */
+  async findUser(criteria: {
+    id?: string;
+    email?: string;
+  }): Promise<User | User[]> {
+    if (criteria.id) {
+      // Kiểm tra id hợp lệ với mongoose
+      if (!mongoose.Types.ObjectId.isValid(criteria.id)) {
+        throw new BadRequestException('Invalid id!');
+      }
+      const user = await this.userModel.findById(criteria.id);
+      if (!user) {
+        throw new NotFoundException('User not found!');
+      }
+      return user;
+    } else if (criteria.email) {
+      // Tìm kiếm user theo emai không phân biệt hoa thường
+      const users = await this.userModel.find({
+        email: new RegExp(criteria.email, 'i'),
+      });
+      if (!users.length) {
+        throw new NotFoundException('No user found with the given username!');
+      }
+      return users;
+    } else {
+      throw new BadRequestException(
+        'You must provide either an id or a username.',
+      );
     }
+  }
 
-    const user = await this.userModel.findById(id);
-
-    if (!user) {
-      return {
-        message: 'not found user!',
-      };
-    }
-    return user;
+  isValidPassword(password: string, hashPassword: string): boolean {
+    return compareSync(password, hashPassword);
   }
 
   async update(updateUserDto: UpdateUserDto) {
