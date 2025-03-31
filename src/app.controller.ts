@@ -3,6 +3,7 @@ import { AppService } from './app.service';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from './users/schemas/user.schema';
+import { LocalAuthGuard } from './auth/local-auth.guard';
 
 @Controller()
 export class AppController {
@@ -17,7 +18,7 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @UseGuards(AuthGuard('local'))
+  @UseGuards(LocalAuthGuard)
   @Post('/login')
   handleLogin(@Request() req: Request): User {
     return req.user;
