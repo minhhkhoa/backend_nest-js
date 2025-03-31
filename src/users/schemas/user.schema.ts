@@ -15,19 +15,19 @@ export class User {
   name: string;
 
   @Prop()
-  phone: string;
+  phone?: string;
 
   @Prop()
-  age: number;
+  age?: number;
 
   @Prop()
-  address: string;
+  address?: string;
 
   @Prop()
-  createdAt: Date;
+  createdAt?: Date;
 
   @Prop()
-  updatedAt: string;
+  updatedAt?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User); //- tạo ra một schema từ class User

@@ -7,12 +7,10 @@ import {
   Param,
   Delete,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { TestGuard } from './test.guard';
 
 @Controller('users')
 export class UsersController {
@@ -25,7 +23,6 @@ export class UsersController {
   }
 
   @Get()
-  @UseGuards(TestGuard)
   findAll() {
     return this.usersService.findAll();
   }
@@ -33,11 +30,6 @@ export class UsersController {
   @Get('detail-user')
   findUser(@Query('id') id?: string, @Query('username') username?: string) {
     return this.usersService.findUser({ id, username });
-  }
-
-  @Get('login')
-  login(@Query('email') email: string) {
-    return this.usersService.login(email);
   }
 
   //- cho hết vào body kể cả id

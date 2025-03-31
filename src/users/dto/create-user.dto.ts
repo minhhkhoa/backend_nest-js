@@ -9,9 +9,9 @@ export class CreateUserDto {
   password: string;
 
   name: string;
-  phone: string;
-  age: number;
-  address: string;
-  createdAt: Date;
-  updatedAt: string;
+  phone?: string;
+  age?: number;
+  address?: string;
+  createdAt?: Date;
+  updatedAt?: string;
 }
