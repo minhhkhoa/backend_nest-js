@@ -1,15 +1,15 @@
 import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ConfigService } from '@nestjs/config';
-import { AuthGuard } from '@nestjs/passport';
-import { User } from './users/schemas/user.schema';
 import { LocalAuthGuard } from './auth/local-auth.guard';
+import { AuthService } from './auth/auth.service';
 
 @Controller()
 export class AppController {
   constructor(
     private readonly appService: AppService,
     private configService: ConfigService,
+    private authService: AuthService,
   ) {}
 
   @Get()
@@ -20,7 +20,8 @@ export class AppController {
 
   @UseGuards(LocalAuthGuard)
   @Post('/login')
-  handleLogin(@Request() req: Request): User {
-    return req.user;
+  handleLogin(@Request() req) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    return this.authService.login(req.user);
   }
 }
