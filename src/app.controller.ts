@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { AuthService } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { Public } from './decorator/customize';
 
 @Controller()
 export class AppController {
@@ -19,6 +20,7 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  @Public() //-route nay se de public khong can xac thuc access_token voi JwtAuthGuard
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   handleLogin(@Request() req) {
