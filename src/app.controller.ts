@@ -22,12 +22,13 @@ export class AppController {
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   handleLogin(@Request() req) {
+    //- req.user được passport tự động trả về khi xác thực thành công người dùng ở hàm validate của  file Strategy, nó sẽ lấy giá trị trả về của hàm validate dán vào req.user
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     return this.authService.login(req.user);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('profile')
+  @Get('/profile')
   getProfile(@Request() req) {
     return req.user;
   }
