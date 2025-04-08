@@ -22,7 +22,7 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @Get()
+  @Get(':id')
   findAll() {
     return this.usersService.findAll();
   }
