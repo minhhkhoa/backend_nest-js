@@ -5,15 +5,18 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import mongoose, { Model } from 'mongoose';
-import { User } from './schemas/user.schema';
+import mongoose from 'mongoose';
+import { User, UserDocument } from './schemas/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
+import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 
 @Injectable()
 export class UsersService {
   //- tiêm model User vào constructor lên trang chủ đọc tài liệu hướng dẫn
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: SoftDeleteModel<UserDocument>, //- sử dụng SoftDeleteModel thông qua model UserDocument
+  ) {}
 
   getHashPassword(password: string): string {
     const salt: string = genSaltSync(10);
@@ -97,6 +100,6 @@ export class UsersService {
       };
     }
 
-    return await this.userModel.deleteOne({ _id: id });
+    return await this.userModel.softDelete({ _id: id }); //- hàm softDelete là của soft-delete-plugin-mongoose nó sẽ giúp thêm 2 field deletedAt và isDeleted vào csdl
   }
 }
